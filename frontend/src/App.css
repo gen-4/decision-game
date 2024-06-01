@@ -1,0 +1,30 @@
+@import url('https://fonts.googleapis.com/css2?family=Kode+Mono:wght@400..700&display=swap');
+
+:root {
+  --primary: #04FF11;
+  --secondary: #027E08E8;
+  --background: #1B1B1B;
+  --text: #04FF11;
+  --text-black: #1B1B1B;
+}
+
+.body-font {
+  font-family: "Kode Mono", monospace;
+  font-optical-sizing: auto;
+  font-weight: 400;
+  font-style: normal;
+}
+
+html, body {
+  background-color: var(--background);
+  color: var(--text);
+}
+
+h1, h2, h3, h4, p {
+  margin: 0;
+}
+
+.App {
+  text-align: center;
+  padding: 0 3rem;
+}

@@ -1,0 +1,19 @@
+
+.wrapper {
+    background-color: transparent;
+    border: 2px solid var(--primary);
+    border-radius: 10px;
+    color: var(--text);
+    padding: .5rem 1rem;
+}
+
+.wrapper:focus {
+    border-color: var(--secondary);
+    outline: none;
+}
+
+.fillspace {
+    width: -moz-available;          /* WebKit-based browsers will ignore this. */
+    width: -webkit-fill-available;  /* Mozilla-based browsers will ignore this. */
+    width: stretch;
+}

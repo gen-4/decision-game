@@ -1,0 +1,17 @@
+.message {
+    width: fit-content;
+    padding: .2rem 1rem;
+    margin: .4rem .2rem;
+    align-self: start;
+}
+
+.systemmsg {
+    background-color: var(--primary);
+    border-radius: 10px;
+    color: var(--text-black);
+    animation: typing 3s steps(40, end);
+}
+
+.usermsg {
+    border-radius: 10px;
+}
