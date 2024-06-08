@@ -1,34 +1,82 @@
-import { React, useState } from "react";
+import { React, useState, useRef, useEffect } from "react";
 
 import screenStyle from './screen.module.css';
 
-import Post from "./Post";
+import Post from './Post';
+import Configuration from './Configuration';
+
+import { doExecuteCommand, doGetOrCreatePlayer } from '../../backend/GameEndpoints';
 
 
 
 function Screen() {
+    const [ player, setPlayer ] = useState({});
+    const [ playerName, setPlayerName ] = useState("");
     const [ message, setMessage ] = useState("");
     const [ messages, setMessages ] = useState([]);
-    const [ inputDisabled, setInputDisabled ] = useState(false);
+    const [ inputDisabled, setInputDisabled ] = useState(true);
 
-    const addMessage = ( sender, msg ) => {
-        setMessages([...messages, { sender, msg: "> " + msg }]);
+    const containerRef = useRef(null);
+
+    const addMessages = ( msgList ) => {
+        setMessages([...messages, ...msgList]);
+
+        if(containerRef && containerRef.current) {
+            const element = containerRef.current;
+            element.scroll({
+              top: element.scrollHeight,
+              left: 0,
+              behavior: "smooth"
+            })
+        }
     };
 
-    const addUserMessage = ( msg ) => {
-        addMessage('user', msg);
-        setInputDisabled(true);
-        setMessage("");
-        // TODO: call bacend and onSuccess addSystemMessage finally setInputDisabled(false)
+    const formatMessage = ( sender, msg ) => {
+        return {sender, msg: msg};
     }
 
-    const addSystemMessage = ( msg ) => {
-        addMessage('system', msg);
+    const addUserMessage = ( msg ) => {
+        const formattedUserMessage = formatMessage('user', msg);
+        setInputDisabled(true);
+        setMessage("");
+        doExecuteCommand(
+            { 
+                command: msg,
+                playerId: player.id 
+            }, // Maybe do this with a mutex
+            (data) => addMessages([ formattedUserMessage, formatMessage('system', data.response) ]),
+            () => addMessages([ formattedUserMessage ]),
+            () => setInputDisabled(false)
+        );
+    }
+
+    const addSystemMessages = ( msgs ) => {
+        addMessages(msgs.map(msg => formatMessage('system', msg)));
+    }
+
+    const onInsertPlayerName = ( name ) => {
+        doGetOrCreatePlayer(
+            { name },
+            (data) => {
+                addSystemMessages([ data.response, data.description ]);
+                delete data.response;
+                setPlayer(data);
+                setInputDisabled(false);
+            },
+            () => addSystemMessages([ "Unable to get or create player: " + name ]),
+            () => {}
+        );
     }
 
     return (
         <div className={ screenStyle.container }>
-            <div className={ screenStyle.screen }>
+            <Configuration 
+                value={ playerName } 
+                onChangeFunction={ name => setPlayerName(name) }
+                onInsertFunction={ name => onInsertPlayerName(name) }
+            />
+
+            <div ref={ containerRef } className={ screenStyle.screen }>
                 {
                     messages.map(({ sender, msg }) => (
                         <Post sender={ sender } message={ msg } />

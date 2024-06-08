@@ -7,7 +7,7 @@ import postStyle from './post.module.css';
 function Post({ sender, message }) {
     return (
         <div className={`${postStyle.message} ${ sender === 'system' ? postStyle.systemmsg : postStyle.usermsg}`} >
-            { message }
+            <span>{ '> ' }</span><span>{ message }</span>
         </div>
     );
   }
